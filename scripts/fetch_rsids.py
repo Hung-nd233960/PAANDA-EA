@@ -4,8 +4,9 @@ our 94 unique SNPs). Coordinates in committed_panel_markers.csv are b37,
 so the GRCh37-specific endpoint (grch37.rest.ensembl.org) is used, not the
 default GRCh38 one -- using the wrong build would silently mismatch.
 
-Writes: reports/figures/committed_panel_markers.csv (adds an rsID column,
-overwriting in place)
+Writes: reports/figures/committed_panel_markers.csv (adds an rsID column
+right after rank, overwriting in place)
+       reports/figures/committed_panel_markers.xlsx (same table, Excel)
 """
 
 import json
@@ -52,6 +53,13 @@ for row, res in zip(uniq.itertuples(), results):
 print(f"rsIDs found: {n_found} / {len(uniq)}")
 
 df["rsID"] = [rsid_map.get((r.chr, r.pos)) for r in df.itertuples()]
+df = df[["N", "rank", "rsID", "chr", "pos", "build", "ref", "alt",
+         "AF_Han", "AF_JPT", "AF_SEA", "max_pairwise_FST", "fold_selection_freq"]]
 df.to_csv(CSV, index=False)
 print(f"Updated {CSV}")
-print(df[["N", "rank", "chr", "pos", "rsID"]].head(10).to_string(index=False))
+
+XLSX = CSV.with_suffix(".xlsx")
+df.to_excel(XLSX, index=False, sheet_name="committed_panel_markers")
+print(f"Wrote {XLSX}")
+
+print(df[["N", "rank", "rsID", "chr", "pos"]].head(10).to_string(index=False))
