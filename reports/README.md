@@ -40,10 +40,25 @@ claims that changed; **none should be cited in preference to `REPORT.md`.**
 | [`NESTED_CV_MASTER_REPORT.md`](NESTED_CV_MASTER_REPORT.md) | Internal synthesis written mid-rework. Pre-fix numbers; also frames results as a before/after comparison against the leaky baseline, which the final report deliberately does not do. |
 | [`DOCS_PLAN.md`](DOCS_PLAN.md) | Planning document for the report and a slide deck. The report was built; **the slide deck was never produced.** |
 
+## Slide deck
+
+Not committed as a file, but **generated on demand** from the current figures:
+
+```bash
+conda run -n aisnp python scripts/build_slides.py   # -> reports/SLIDES.pptx
+```
+
+Produces a 17-slide editable PowerPoint deck with native placeholders, tables and
+pictures (not one flat image per slide). Its figures and numbers track the final
+report — verified against a clean clone. The script's docstring mentions a
+`reports/SLIDES.md` mirror; that file does not exist and is not required.
+
+`scripts/build_poster.py` is **not runnable**: it depends on an institutional
+PowerPoint template that was never committed and is no longer on the author's disk.
+It is retained only as a record of how the poster was produced.
+
 ## Known gaps
 
-- **No slide deck.** `DOCS_PLAN.md` §2.2 plans one; it was never built against the
-  final report. Earlier `SLIDES.md`/`SLIDES.pptx` drafts were abandoned as stale.
 - **Single cohort.** Every number in the report comes from one 504-individual 1000
   Genomes EAS cohort. No independent validation cohort was evaluated — the main
   limitation on publishability (`REPORT.md` §VI-E).
