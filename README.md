@@ -109,7 +109,8 @@ AISNP_Research/
 │       └── 11_results.ipynb                    # Figures/tables for the leaky-baseline notebook chain
 │
 ├── data/
-│   └── published_panels/                  # Cai, Cao, Shi rsID lists + coord maps
+│   ├── published_panels/                  # Cai, Cao, Shi rsID lists + coord maps (the three benchmarked panels)
+│   └── known_aisnps/                      # Wider reference collection of published AISNP panels; not benchmarked
 │
 ├── scripts/
 │   ├── config.py, notebook_init.py        # Centralized paths, shared setup
