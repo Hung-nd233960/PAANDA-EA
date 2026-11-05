@@ -1,6 +1,6 @@
 # PAANDA-EA
 
-> **Status: archived (November 2026).** This project is complete and no longer maintained. The final state of the code and results is tagged `v1.1` (`v1.0` is the same work before a final documentation-accuracy pass). Issues and pull requests will not be answered. [`reports/REPORT.md`](reports/REPORT.md) is the authoritative write-up; some earlier documents in `reports/` are superseded and marked as such.
+> **Status: archived (November 2026).** This project is complete and no longer maintained. **`v1.2` is the final release** — cite that tag; `v1.0` and `v1.1` are earlier points in the same archiving pass and are superseded. Issues and pull requests will not be answered. [`reports/REPORT.md`](reports/REPORT.md) is the authoritative write-up; some earlier documents in `reports/` are superseded and marked as such.
 
 **P**anel for **A**ISNP-based **A**Ncestry **D**iscovery & **A**ssessment — **E**ast **A**sian
 
