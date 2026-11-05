@@ -1,5 +1,7 @@
 # PAANDA-EA
 
+> **Status: archived (November 2026).** This project is complete and no longer maintained. The final state of the code and results is tagged `v1.0`. Issues and pull requests will not be answered.
+
 **P**anel for **A**ISNP-based **A**Ncestry **D**iscovery & **A**ssessment — **E**ast **A**sian
 
 Repository: <https://github.com/Hung-nd233960/PAANDA-EA>
@@ -247,4 +249,4 @@ Full citation list with DOIs: `reports/references.bib` (if present) or the Refer
 
 ## License
 
-For research and educational purposes only.
+Released under the MIT License — see [`LICENSE`](LICENSE).

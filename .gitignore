@@ -5,3 +5,4 @@ __pycache__/
 output/
 paths.local.yaml
 reports/*.clean.md
+.claude/
