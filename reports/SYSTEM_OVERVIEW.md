@@ -2,6 +2,14 @@
 
 **P**anel for **A**ISNP-based **A**Ncestry **D**iscovery & **A**ssessment — **E**ast **A**sian
 
+> **Superseded — see [`REPORT.md`](REPORT.md).** This document describes the
+> pipeline's architecture as of June 2026, before the leak-free nested-CV rework and
+> before the combined-block fix. Its architectural description (stages, pools,
+> statistics) is still broadly accurate, but **every accuracy figure and comparative
+> claim below predates the leak fix and overstates performance.** `REPORT.md` is the
+> final, authoritative version. Corrections are marked inline at the affected
+> sections.
+
 ## Problem Statement
 
 Given whole-genome SNP data from 504 East Asian individuals across three subpopulations, identify the **smallest set of SNPs** that allows a machine learning classifier to accurately assign ancestry to Han (Han Chinese), JPT (Japanese), or SEA (Southeast Asian).
@@ -104,9 +112,11 @@ Hudson FST computed pairwise across all three population pairs (Han↔JPT, Han�
 
 FST normalises by heterozygosity and upweights rare, drift-fixed variants. δAF treats all allele frequencies equally — the two approaches capture partly orthogonal signal.
 
-### Combined block (fst_stat — 1,003 SNPs)
+### Combined block (fst_stat — 965 SNPs)
 
-Intersection of stat and FST blocks. SNPs independently nominated by both approaches — the consensus set. **1,003 SNPs**.
+The stat block's own χ²/JSD/AFD ranking (same top-500-per-test union rule), applied only within the FST block's 2,508 candidates. Always a subset of the FST block, and 95.3% overlapping with the plain stat block. **965 SNPs**.
+
+> **Corrected.** Earlier drafts described this as a plain *intersection* of the stat and FST blocks (1,003 SNPs), and the code implemented a different cascading filter again. Both were fixed; see `REPORT.md` §IV-A.
 
 ---
 
@@ -170,7 +180,9 @@ SNPs extracted from MAF-filtered pre-LD-pruning plink data (22M SNPs) to maximis
 
 ### Key comparison finding
 
-Cai's expert-curated panel achieves ~94.6% on our cohort — **classifier-agnostic** (all 6 classifiers score similarly). PAANDA-EA panels show greater variance across classifiers but achieve higher peak accuracy at N ≥ 50. The crossover is around N = 50–55.
+*(Pre-fix, superseded — see the note below.)* Cai's expert-curated panel achieves ~94.6% on our cohort — **classifier-agnostic** (all 6 classifiers score similarly). PAANDA-EA panels show greater variance across classifiers but achieve higher peak accuracy at N ≥ 50. The crossover is around N = 50–55.
+
+> **Superseded.** The "crossover at N = 50–55" claim above rests on the pre-fix, leaky accuracy estimates. Under the leak-free protocol there is no crossover at that size: the pipeline reaches *parity* with Cai-34 at N = 70 (94.25% vs 94.64%, paired *t*-test p = 0.76) and does **not** exceed it at any committed size. At matched panel size (N = 35) expert curation is ahead by a clear, significant margin (p = 0.0014). See `REPORT.md` §V-D.
 
 Cai's higher score on our cohort vs their published 92% is attributable to cohort composition differences: our 1000 Genomes 504-sample EAS subset is more homogeneous than the broader cohort Cai likely used.
 
@@ -193,10 +205,17 @@ PAANDA-EA committed panels (N=35/50/70) converted to rsIDs via MyVariant.info. S
 | Step | Input | Output |
 |---|---|---|
 | Quality filtering | ~22M SNPs | 614,759 clean independent SNPs |
-| Candidate construction | 614,759 SNPs | 3 pools: stat (1,005) / FST (2,508) / fst_stat (1,003) |
+| Candidate construction | 614,759 SNPs | 3 pools: stat (1,005) / FST (2,508) / fst_stat (965) |
 | Stage 1 sweep | 9 pool×reductor configs | Best config per N → stat+ElasticNet |
 | Stage 2 sweep | 6 classifiers | Performance curve N=5→100; best clf per N |
 | Stage 3 commit | 80/20 split | Final panels: N=35 / N=50 / N=70 |
 | Benchmarking | 3 published panels | Cai~94.6%, PAANDA-EA N=35~92%, crossover at N≈50 |
 
-**Main finding**: Automated selection via stat+ElasticNet reaches expert-curated panel accuracy (~94%) at N≈50 without any domain-specific curation, and exceeds it at N≥55.
+**Main finding (pre-fix, superseded)**: Automated selection via stat+ElasticNet reaches expert-curated panel accuracy (~94%) at N≈50 without any domain-specific curation, and exceeds it at N≥55.
+
+> **Superseded main finding.** The row and claim above are pre-fix figures. The final
+> result is weaker and conditional: under the leak-free protocol the pipeline reaches
+> parity with Cai-34 only at N = 70 — roughly double Cai-34's marker count — and
+> expert curation remains clearly ahead at matched panel size. The pipeline does not
+> exceed the expert panel at any committed size. The recommended pool also changed
+> from stat to fst_stat. See `REPORT.md` §VI-D for the final statement.

@@ -1,6 +1,6 @@
 # PAANDA-EA
 
-> **Status: archived (November 2026).** This project is complete and no longer maintained. The final state of the code and results is tagged `v1.0`. Issues and pull requests will not be answered.
+> **Status: archived (November 2026).** This project is complete and no longer maintained. The final state of the code and results is tagged `v1.1` (`v1.0` is the same work before a final documentation-accuracy pass). Issues and pull requests will not be answered. [`reports/REPORT.md`](reports/REPORT.md) is the authoritative write-up; some earlier documents in `reports/` are superseded and marked as such.
 
 **P**anel for **A**ISNP-based **A**Ncestry **D**iscovery & **A**ssessment — **E**ast **A**sian
 
@@ -12,7 +12,7 @@ Automated, leak-free selection and validation of Ancestry-Informative SNPs (AISN
 git clone https://github.com/Hung-nd233960/PAANDA-EA.git
 ```
 
-**Full write-up:** [`reports/REPORT.md`](reports/REPORT.md) (complete methodology, derivations, statistical tests, marker documentation) · [`reports/REPORT_SHORT.md`](reports/REPORT_SHORT.md) (condensed version, includes a point-by-point reviewer-response section).
+**Full write-up:** [`reports/REPORT.md`](reports/REPORT.md) (complete methodology, derivations, statistical tests, marker documentation) · [`reports/REPORT_SHORT.md`](reports/REPORT_SHORT.md) (condensed version, includes a point-by-point reviewer-response section) · [`reports/README.md`](reports/README.md) (how to build them, and which documents are superseded).
 
 ## Overview
 
@@ -62,7 +62,9 @@ Because candidate-pool construction, feature ranking, and classification all use
 └──────────────────────────┘
 ```
 
-`fst_stat` is **not** a set intersection — it applies the `stat` pool's own ranking (χ²/JSD/AFD) to `FST`'s 2,508 candidates only, i.e. a cascade of one criterion's ranking restricted to another criterion's scope. An earlier version of this pipeline built `fst_stat` as a full-cohort intersection *before* the CV split, which leaked label information into candidate eligibility; that bug is fixed in the current architecture (`scripts/nested_selection.py:fst_stat_pool_indices`) and is why `fst_stat`'s size changed from 1,003 (old, leaky) to 965 (current, leak-free).
+`fst_stat` is **not** a set intersection — it applies the `stat` pool's own ranking (χ²/JSD/AFD) to `FST`'s 2,508 candidates only, i.e. a cascade of one criterion's ranking restricted to another criterion's scope.
+
+Two distinct defects were corrected here, and it is worth keeping them apart. First, **a construction bug**: `fst_stat` was documented as a plain intersection of the `stat` and `FST` pools, but implemented as a cascading χ²/mutual-information/KL-divergence consensus filter — matching neither the documentation nor the `stat` pool's own criteria. Correcting it to mirror `stat`'s χ²/JSD/AFD ranking (`scripts/nested_selection.py:fst_stat_pool_indices`) is what changed the pool's size from 1,003 to **965**. Second, and separately, **a leakage bug**: all three candidate pools were originally nominated once from all 504 labelled samples before the CV split, leaking label information into candidate eligibility. That is fixed by rebuilding every pool inside each fold. The size change is attributable to the first fix, not the second.
 
 ### Key Results
 
@@ -123,8 +125,10 @@ AISNP_Research/
 │                                          # Figure/deliverable generation for reports/
 │
 └── reports/
+    ├── README.md                          # Index: build command, which documents are superseded, known gaps
     ├── REPORT.md                          # ★ Canonical write-up: full methodology, results, statistics, marker documentation
     ├── REPORT_SHORT.md                    # ★ Condensed write-up + point-by-point reviewer-response section
+    ├── references.bib, ieee.csl           # Bibliography + IEEE style; report citations resolve via Pandoc citeproc
     ├── figures/                           # All report figures (PNG/SVG) + committed_panel_markers.csv
     ├── METHODOLOGY.md, SYSTEM_OVERVIEW.md, NESTED_CV_MASTER_REPORT.md
     │                                       # Earlier-phase working documents; superseded by REPORT.md
@@ -245,7 +249,7 @@ Published panels re-genotyped and evaluated on the same 504-sample cohort with t
 - Cao et al. 2022 — 19-SNP panel
 - Shi et al. 2019 — 36/59/98/142-SNP nested panels
 
-Full citation list with DOIs: `reports/references.bib` (if present) or the References section of `reports/REPORT.md`.
+Full citation list with DOIs: [`reports/references.bib`](reports/references.bib). The report's reference list is generated from it at build time — see [`reports/README.md`](reports/README.md) for the Pandoc command.
 
 ## License
 

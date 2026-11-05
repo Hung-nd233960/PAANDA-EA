@@ -4,6 +4,15 @@
 nested-CV rework: a long-form report and a short slide deck. This document is the
 plan only — no report/slide content yet.*
 
+> **Historical planning document — the plan below was executed.** Retained as a
+> development record. The report it plans is [`REPORT.md`](REPORT.md) (with
+> [`REPORT_SHORT.md`](REPORT_SHORT.md) as the condensed version); the citation
+> pipeline described in §5 is now in place (`references.bib` + `ieee.csl`, build
+> command in [`README.md`](README.md)). Two items were **not** completed: the slide
+> deck (§2.2) was never rebuilt against the final report, and several figure
+> decisions in §4 were superseded when the figures were regenerated after the
+> combined-block fix. Figure numbering in §4 does not match the final report's.
+
 **Format requirements (added):**
 - **Report must be Word-compatible.** Written in Markdown, exported to `.docx` via
   Pandoc. This constrains figure format (PNG, not SVG — Pandoc's docx writer

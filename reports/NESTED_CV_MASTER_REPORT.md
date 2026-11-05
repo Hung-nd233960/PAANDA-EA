@@ -3,6 +3,15 @@
 *Branch `nested-cv-leakfree`. Generated 2026-07-13. Compares against the frozen
 leaky baseline `results_archive/baseline_leaky_v1/` (commit a803362).*
 
+> **Historical working document — superseded by [`REPORT.md`](REPORT.md).** This was
+> the internal synthesis written while the leak-free rework was in progress; it is
+> retained as a development record, not as a deliverable. Two reasons not to cite it:
+> its numbers predate the combined-block fix (the fst_stat pool is given as 1,003
+> SNPs, not the corrected 965), and its pool recommendation — stat at small N, FST at
+> large N — was later reversed in favour of fst_stat. §1's comparison against the
+> leaky baseline is also deliberately absent from the final report, which presents the
+> current pipeline on its own terms rather than as a before/after story.
+
 ---
 
 ## 1. Executive summary

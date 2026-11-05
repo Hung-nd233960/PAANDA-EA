@@ -1,5 +1,12 @@
 # Methodology — AISNP Panel Selection for Within-East-Asian Population Discrimination
 
+> **Superseded — see [`REPORT.md`](REPORT.md).** This document was the working
+> methodology write-up during development. `REPORT.md` is the final, authoritative
+> version: it supersedes every section below, and where the two differ, `REPORT.md`
+> is correct. This file is retained for its development history. The sections most
+> affected are §2.2.3 (the combined block's construction was corrected after this was
+> written) and §2.3.5 (the pool recommendation was reversed).
+
 ---
 
 ## 2.1 Data and Quality Filtering
@@ -38,7 +45,9 @@ Wright's fixation index (F_ST) measures the proportion of total genetic variance
 
 ### 2.2.3 Combined Block (fst_stat)
 
-The intersection of the statistical block and the FST block — SNPs independently nominated by both approaches — formed the **combined block: 1,003 SNPs**. This consensus set reduces method-specific noise: a SNP present in both blocks has been identified as discriminative by fundamentally different criteria (linear statistical tests vs. population-level differentiation), suggesting more robust signal.
+The combined block applies the statistical block's own χ²/JSD/AFD ranking — the same top-500-per-test union rule — but restricted to the FST block's 2,508 candidates rather than all 614,759 filtered SNPs, forming the **combined block: 965 SNPs**. It asks which SNPs are simultaneously among the most differentiated by FST *and* by the statistical criteria, so it is always a subset of the FST block (965 of 2,508) and overlaps the plain stat block heavily (920 of 965, 95.3%).
+
+> **Correction.** This block was described in earlier drafts as a plain *intersection* of the stat and FST blocks (1,003 SNPs), and was implemented as a cascading χ²/mutual-information/KL-divergence consensus filter — neither of which matches the construction above. Both the description and the implementation were corrected; see `REPORT.md` §IV-A for the final account. The 965-SNP figure and all results derived from it postdate that fix.
 
 The three candidate sets carried forward to machine learning are summarised below:
 
@@ -46,7 +55,7 @@ The three candidate sets carried forward to machine learning are summarised belo
 |---|---|---|
 | stat | Union of top-500 per statistical test (χ², JSD, AFD) | 1,005 |
 | FST | Union of top-1,000 per pairwise FST (3 pairs) | 2,508 |
-| fst_stat | Intersection of stat and FST blocks | 1,003 |
+| fst_stat | stat's own χ²/JSD/AFD ranking, applied only within the FST block's 2,508 candidates | 965 |
 
 ---
 
@@ -96,7 +105,7 @@ Panel files saved as `panels/panel_N{N:03d}.csv` (rank, SNP ID, reductor score).
 
 ### 2.3.4 Leak-Free Nested Cross-Validation (notebook 08b)
 
-To remove the candidate-set leakage noted in §2.3.1, we re-estimated performance with the **entire supervised selection chain rebuilt inside each cross-validation fold**: the stat pool (χ²/JSD/AFD, top-500 union), the FST pool (pairwise Hudson F_ST, top-1,000 union) and the fst_stat consensus are all nominated from the outer training fold *only*, then the reductor ranks and a classifier is trained — all before the held-out fold is touched. Per-fold F_ST is computed with `plink2 --keep <fold> --fst pop report-variants` (the same estimator used pipeline-wide, restricted to the fold's training samples), guarded by sample-alignment and variant-ID assertions. The in-fold pool builders reproduce the committed 1,005 / 2,508 / 1,003 pools exactly when run on all 504 samples.
+To remove the candidate-set leakage noted in §2.3.1, we re-estimated performance with the **entire supervised selection chain rebuilt inside each cross-validation fold**: the stat pool (χ²/JSD/AFD, top-500 union), the FST pool (pairwise Hudson F_ST, top-1,000 union) and the fst_stat consensus are all nominated from the outer training fold *only*, then the reductor ranks and a classifier is trained — all before the held-out fold is touched. Per-fold F_ST is computed with `plink2 --keep <fold> --fst pop report-variants` (the same estimator used pipeline-wide, restricted to the fold's training samples), guarded by sample-alignment and variant-ID assertions. The in-fold pool builders reproduce the committed 1,005 / 2,508 / 965 pools exactly when run on all 504 samples.
 
 Two estimates are reported:
 
@@ -115,7 +124,11 @@ The published panels (Cai/Cao/Shi) are external SNP sets and carry no selection 
 
 *Committed SNP lists are unchanged:* the shipped panels may legitimately be selected on all 504 samples — only the reported accuracy *estimate* must be leak-free, and that is what §2.3.4 provides.
 
-A full leak-free grid (N=5–100 × 3 pools × 3 reducers × 6 classifiers × 5 folds) was also run to identify the most consistent configuration. **ElasticNet is the decisive reducer** (56/90 fold-wins). The best *pool* is panel-size dependent — the stat pool wins at N≤55, the FST pool at N≥65 (e.g. FST+EN+SVM-RBF reaches 94.25% at N=70, level with external Cai-34 at 94.6%). Classifiers span only ~2.6 points, so one should be pre-specified rather than max-selected. Full analysis, figures and the recommended narrative: **`reports/NESTED_CV_MASTER_REPORT.md`**.
+A full leak-free grid (N=5–100 × 3 pools × 3 reducers × 6 classifiers × 5 folds) was also run to identify the most consistent configuration. **ElasticNet is the decisive reducer** (59/90 fold-wins, and the winning reducer at all 18 panel sizes). Classifiers span only ~2.6 points, so one should be pre-specified rather than max-selected.
+
+> **Superseded pool guidance.** This section previously recommended a panel-size-dependent pool (stat at N≤55, FST at N≥65), read from the grid's per-N hindsight winners. That recommendation was reversed. The grid's hindsight pool winner agrees with what a blind, nested selection process actually picks at only 4 of 18 panel sizes, and FST — which the grid names most often — is chosen in just 4% of blind fold-level picks, against 60% for fst_stat. **fst_stat is the recommended default pool.** See `REPORT.md` §IV-D3 and §VI-C for the evidence and the revised recommendation.
+
+Full analysis and figures: **[`REPORT.md`](REPORT.md)** (§IV-D, §V-B, §VI).
 
 ---
 

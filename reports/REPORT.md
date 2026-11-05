@@ -369,7 +369,7 @@ The two rows tell different stories. At N = 70, the difference is not statistica
 
 Every accuracy figure so far describes the *procedure's* generalization, not the stability of the specific SNPs it names. This is a distinct question worth reporting directly: each committed panel's marker list is fit on all 504 samples (§VI-E), but this pipeline's own leak-free design already produces 5 additional, independent panels of the same size — one per outer training fold (§IV-C) — which makes it possible to ask how often a committed marker also appears in those 5 fold-specific panels, without any extra model fitting.
 
-**Table XV. Marker-selection stability by committed panel size.**
+**Table XIV. Marker-selection stability by committed panel size.**
 
 | N | Mean fold-selection frequency | Selected in 5/5 folds | Selected in 0/5 folds |
 |---|---|---|---|
@@ -389,7 +389,7 @@ Only about a quarter of each committed panel's markers are re-selected in all 5 
 
 If Best Fixed Configuration's winners were purely an artifact of peeking at test scores, there would be no particular reason for Blind Selection's honest, per-fold picks (§V-B) to resemble them. At the three committed panel sizes, they resemble them closely — more closely, in fact, than §IV-D3's full-grid pool-divergence finding might suggest. Comparing the modal category picks from Table IX against the winning configuration in Table X at each committed N:
 
-**Table XIV. Agreement between Blind Selection's modal picks and Best Fixed Configuration's winner.**
+**Table XV. Agreement between Blind Selection's modal picks and Best Fixed Configuration's winner.**
 
 | N | Category | Blind Selection modal pick | Best Fixed Configuration | Agree? |
 |---|---|---|---|---|
@@ -422,7 +422,7 @@ This work does not claim that an automated pipeline outperforms expert curation.
 ### E. Limitations
 
 - **Committed SNP identities are naturally selected on all 504 samples.** The Blind Selection and Best Fixed Configuration estimates (§IV-C, §V) describe the expected accuracy of the selection *process*; a final, shipped panel intended for deployment would reasonably use all available samples to pick its SNPs, which is standard practice once performance has been rigorously estimated — but means the shipped panel's own training-cohort accuracy should not be read as a performance guarantee. A reader deploying the recommended panel on new individuals should expect performance in the range the Blind Selection estimate implies, not the panel's own training-cohort score.
-- **Marker identity is less stable across folds than accuracy is.** §V-E and Table XV show only 14–24% of each committed panel's markers are re-selected in all 5 of this pipeline's own leak-free per-fold panels, with mean fold-selection frequency around 0.58–0.61 — a genuinely wider spread than the corresponding accuracy CIs (Table XI). A reader building a fixed multiplex assay should treat the *panel-size-and-accuracy* recommendation as far more robust than the *exact SNP list* of any single committed panel.
+- **Marker identity is less stable across folds than accuracy is.** §V-E and Table XIV show only 14–24% of each committed panel's markers are re-selected in all 5 of this pipeline's own leak-free per-fold panels, with mean fold-selection frequency around 0.58–0.61 — a genuinely wider spread than the corresponding accuracy CIs (Table XI). A reader building a fixed multiplex assay should treat the *panel-size-and-accuracy* recommendation as far more robust than the *exact SNP list* of any single committed panel.
 - **Residual selection optimism in any single named configuration.** As detailed in §IV-D, the recommended configuration's exact accuracy figure (e.g., 94.25% at N = 70) was chosen by scanning a 54-candidate grid and reporting the maximum, which carries a mild, second-order form of selection optimism. This report mitigates, but does not eliminate, that residual bias by pairing every named-configuration accuracy with its corresponding Blind Selection estimate.
 - **Hindsight and honest, blind selection disagree substantially about which candidate pool is best.** §IV-D3 and Fig. 5 show the grid's per-panel-size pool winner agrees with Blind Selection's own blind modal pick at only 4 of 18 panel sizes; in aggregate, the grid names FST as its single most frequent winner (7/18) while an honest process almost never picks it (4% of blind fold-level picks). The two committed-N pool disagreements this analysis surfaced (§VI-A, N = 70) are handled explicitly in the recommendation (§VI-C), but a reader extending this pipeline to new panel sizes should not treat any single N's hindsight pool winner as trustworthy without checking it against a blind estimate the way this report does.
 - **The search space is a curated menu, not an exhaustive one.** As noted in §IV-B, the 54 candidates span 3 pools × 3 reductors × 6 classifiers using standard, fixed-hyperparameter implementations — they do not cover deep-learning approaches, alternative population-differentiation statistics, per-classifier hyperparameter tuning, or ensemble methods. "Best Fixed Configuration" means best of these 54 candidates; a wider search might find a stronger configuration at any given N.
